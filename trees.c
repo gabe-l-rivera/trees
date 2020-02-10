@@ -1,27 +1,21 @@
 /* Author: Gabe Rivera
- * Date: Jan. 30, 2020
+ * Updated: Feb. 39 2020
  * Course: CS 315, Dr. Finkel
  * Programming Assignment 2: Trees
- *
- *
- *
+ * Project Description:
  It takes a single integer parameter: the number n of data points in the tree.
  It reads n points from standard input. Each point has three integer components, which we call X, Y, and Z.
  As it reads those points, it places them in an initially empty binary tree T1 sorted on the X value.
  It traverses T1 in symmetric order, printing each point to standard output on a separate line in this format:
- 
  (342, 512, 56311232)
- 
  It traverses T1 in preorder, placing each node in an initially empty binary tree T2 sorted on the Y value.
  It traverses T2 in postorder, printing each point on a separate line in the same format as before.
  It reads one more integer from standard input: the probe p, a Y value. It searches for p in T2, printing the last point it encounters as it descends through T2, which might have p itself as its Y value, or its Y value might just be close to p.
- *
  *
  */
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include <limits.h>
 #include <float.h>
 
@@ -43,10 +37,10 @@ struct dataPoint* makePoint(int x, int y, int z){
 }
 
 void fillPoint(struct dataPoint *point, int numberOfPoints){
-    for(int i = 0; i < numberOfPoints; i++){
-        scanf("%d", &point->x);
-        scanf("%d", &point->y);
+    for(int i = numberOfPoints-1; i >= 0; i--){
         scanf("%d", &point->z);
+        scanf("%d", &point->y);
+        scanf("%d", &point->x);
         point++;
     }
 }
@@ -68,7 +62,7 @@ struct node* makeNodePackage(struct dataPoint *point){
     newNode->right = NULL;
     return newNode;
     
-}
+} //make node w pakage
 
 struct node* treeInit(struct dataPoint *point){
     return makeNodePackage(point);
@@ -87,6 +81,7 @@ void insertTreeX(struct node *tree, struct dataPoint *point){
     }else{
         parent->right = newNode;
     }
+    
 }
 
 void insertTreeY(struct node *tree, struct dataPoint *point){
@@ -119,7 +114,7 @@ void pre(struct node *t1,struct dataPoint *point){
         point+=1;
         pre(t1->left,point);
         pre(t1->right,point);
-    }
+    }   
 }
 
 void post(struct node *tree){
@@ -159,12 +154,12 @@ struct node *findClosest(struct node *tree, int target){
 }
 
 int main(int argc, char *argv[]){
-    int dataPoints = atoi(argv[1]);
+   // int dataPoints = atoi(argv[1]);
+    int dataPoints = 3;
     int probe;
     struct dataPoint point[dataPoints]; // creates dataPoints number of point structures
     fillPoint(point, dataPoints);
     //printPoint(point, dataPoints);
-    printf("\n");
     struct node *t1 = NULL;
     struct node *t2 = NULL;
     t1 = treeInit(point);
@@ -184,4 +179,3 @@ int main(int argc, char *argv[]){
     printf("(%d,%d,%d)\n",t3->x,t3->y,t3->z);
     return 0;
 }
-
