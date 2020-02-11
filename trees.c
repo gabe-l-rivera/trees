@@ -2,7 +2,9 @@
  * Date: Feb. 11, 2020
  * Course: CS 315, Dr. Finkel
  * Programming Assignment 2: Trees
+ * 129 source lines of code: 16 lines in main, 113 lines of funtion code
  */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <float.h>
@@ -44,7 +46,7 @@ struct node* makeNodePackage(struct dataPoint *point){
 } //make node from a "package", where a package is data point consisting of struct (x,y,z)
 
 struct node* treeInit(struct dataPoint *point){
-        return makeNodePackage(point);
+    return makeNodePackage(point);
 } //function used to initilize initaly empty trees
 
 void insertTreeX(struct node *tree, struct dataPoint *point){
@@ -59,7 +61,7 @@ void insertTreeX(struct node *tree, struct dataPoint *point){
     }else{
         parent->right = newNode;
     }
-
+    
 } //fucntion used to insert nodes into a tree, sorted on the x value, ties go left. this function was derived from Dr.Finkels "in class" notes
 
 void insertTreeY(struct node *tree, struct dataPoint *point){
@@ -90,7 +92,7 @@ void pre(struct node *t1,struct node *t2){
         insertTreeY(t2, makePoint(t1->x,t1->y,t1->z));
         pre(t1->left,t2);
         pre(t1->right,t2);
-    };
+    }
 } //preorder traversal. Also derived from Dr. Finkels notes
 
 void post(struct node *tree){
@@ -120,8 +122,8 @@ struct node *helper(struct node *tree, int target, struct node *closest){
 } //helper fucntion to assist finding the closest Y value with respect to the "probe"
 
 struct node *findClosest(struct node *tree, int target){
-        struct node *closest = makeNodePackage(makePoint(DBL_MAX,DBL_MAX,DBL_MAX));
-        return helper(tree,target,closest);
+    struct node *closest = makeNodePackage(makePoint(DBL_MAX,DBL_MAX,DBL_MAX));
+    return helper(tree,target,closest);
 } //fucntion to find closest probe value
 
 int main(int argc, char *argv[]){
