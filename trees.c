@@ -1,32 +1,20 @@
 /* Author: Gabe Rivera
- * Updated: Feb. 39 2020
+ * Date: Feb. 11, 2020
  * Course: CS 315, Dr. Finkel
  * Programming Assignment 2: Trees
- * Project Description:
- It takes a single integer parameter: the number n of data points in the tree.
- It reads n points from standard input. Each point has three integer components, which we call X, Y, and Z.
- As it reads those points, it places them in an initially empty binary tree T1 sorted on the X value.
- It traverses T1 in symmetric order, printing each point to standard output on a separate line in this format:
- (342, 512, 56311232)
- It traverses T1 in preorder, placing each node in an initially empty binary tree T2 sorted on the Y value.
- It traverses T2 in postorder, printing each point on a separate line in the same format as before.
- It reads one more integer from standard input: the probe p, a Y value. It searches for p in T2, printing the last point it encounters as it descends through T2, which might have p itself as its Y value, or its Y value might just be close to p.
- *
  */
-
 #include <stdio.h>
 #include <stdlib.h>
-#include <limits.h>
 #include <float.h>
 
 struct node{
     int x,y,z;
     struct node *left, *right;
-};
+}; // struct for building trees
 
 struct dataPoint{
     int x, y, z;
-};
+}; //struct for data points (x,y,z)
 
 struct dataPoint* makePoint(int x, int y, int z){
     struct dataPoint *point = (struct dataPoint*)malloc(sizeof(struct dataPoint));
@@ -34,24 +22,16 @@ struct dataPoint* makePoint(int x, int y, int z){
     point->y = y;
     point->z = z;
     return point;
-}
+} //function for creating data points used to allocate data into trees
 
 void fillPoint(struct dataPoint *point, int numberOfPoints){
     for(int i = numberOfPoints-1; i >= 0; i--){
         scanf("%d", &point->z);
         scanf("%d", &point->y);
         scanf("%d", &point->x);
-        point++;
+        point+=1;
     }
-}
-
-void printPoint(struct dataPoint *point, int numberOfPoints){
-    for(int i = 0; i < numberOfPoints; i++){
-        printf("\nData point %d values : ", i);
-        printf("(%d, %d, %d)\n", point->x, point->y, point->z);
-        point++;
-    }
-}
+} //function used to fill data points from user input (works for randGen.pl and std input)
 
 struct node* makeNodePackage(struct dataPoint *point){
     struct node *newNode = (struct node*)malloc(sizeof(struct node));
@@ -61,17 +41,15 @@ struct node* makeNodePackage(struct dataPoint *point){
     newNode->left = NULL;
     newNode->right = NULL;
     return newNode;
-    
-} //make node w pakage
+} //make node from a "package", where a package is data point consisting of struct (x,y,z)
 
 struct node* treeInit(struct dataPoint *point){
-    return makeNodePackage(point);
-}
+        return makeNodePackage(point);
+} //function used to initilize initaly empty trees
 
 void insertTreeX(struct node *tree, struct dataPoint *point){
     struct node *parent = NULL;
     struct node *newNode = makeNodePackage(point);
-    
     while(tree != NULL){
         parent = tree;
         tree = (point->x <= tree->x) ? tree->left : tree->right;
@@ -81,13 +59,12 @@ void insertTreeX(struct node *tree, struct dataPoint *point){
     }else{
         parent->right = newNode;
     }
-    
-}
+
+} //fucntion used to insert nodes into a tree, sorted on the x value, ties go left. this function was derived from Dr.Finkels "in class" notes
 
 void insertTreeY(struct node *tree, struct dataPoint *point){
     struct node *parent = NULL;
     struct node *newNode = makeNodePackage(point);
-    
     while(tree != NULL){
         parent = tree;
         tree = (point->y <= tree->y) ? tree->left : tree->right;
@@ -97,38 +74,33 @@ void insertTreeY(struct node *tree, struct dataPoint *point){
     }else{
         parent->right = newNode;
     }
-}
+} //fucntion used to insert nodes into a tree, sorted on the y value, ties go left.
 
 void symmetric(struct node *tree){
     if (!tree)
         return;
     symmetric(tree->left);
-    printf("(%d,%d,%d)\n",tree->x,tree->y,tree->z);
+    printf("(%d, %d, %d)\n",tree->x,tree->y,tree->z);
     symmetric(tree->right);
-}
+} //basic symmetrical (inorder) traversal, implemented by Dr. Finkel's in class notes
 
-void pre(struct node *t1,struct dataPoint *point){
+void pre(struct node *t1,struct node *t2){
     if(t1 == NULL) {// do nothing
     }else{
-        struct dataPoint *point = makePoint(t1->x,t1->y,t1->z);
-        point+=1;
-        pre(t1->left,point);
-        pre(t1->right,point);
-    }   
-}
+        insertTreeY(t2, makePoint(t1->x,t1->y,t1->z));
+        pre(t1->left,t2);
+        pre(t1->right,t2);
+    };
+} //preorder traversal. Also derived from Dr. Finkels notes
 
 void post(struct node *tree){
     if(tree == NULL) {// do nothing
     }else{
         post(tree->left);
         post(tree->right);
-        printf("(%d,%d,%d)\n",tree->x,tree->y,tree->z);
+        printf("(%d, %d, %d)\n",tree->x,tree->y,tree->z);
     }
-}
-
-struct dataPoint *nodeToPoint(struct node *tree){
-    return makePoint(tree->x,tree->y,tree->z);
-}
+} //postorder traversal from Dr. Finkels notes
 
 struct node *helper(struct node *tree, int target, struct node *closest){
     struct node *current = tree;
@@ -142,40 +114,31 @@ struct node *helper(struct node *tree, int target, struct node *closest){
         else if(target > current->y){
             current = current->right;
         }
-        else
-            break;
+        else break;
     }
     return closest;
-}
+} //helper fucntion to assist finding the closest Y value with respect to the "probe"
 
 struct node *findClosest(struct node *tree, int target){
-    struct node *closest = makeNodePackage(makePoint(DBL_MAX,DBL_MAX,DBL_MAX));
-    return helper(tree,target,closest);
-}
+        struct node *closest = makeNodePackage(makePoint(DBL_MAX,DBL_MAX,DBL_MAX));
+        return helper(tree,target,closest);
+} //fucntion to find closest probe value
 
 int main(int argc, char *argv[]){
-   // int dataPoints = atoi(argv[1]);
-    int dataPoints = 3;
+    int dataPoints = atoi(argv[1]);
     int probe;
     struct dataPoint point[dataPoints]; // creates dataPoints number of point structures
     fillPoint(point, dataPoints);
-    //printPoint(point, dataPoints);
-    struct node *t1 = NULL;
-    struct node *t2 = NULL;
+    struct node *t1 = NULL, *t2 = NULL, *t3 = NULL;
     t1 = treeInit(point);
-    t2 = treeInit(point);
-    for(int i = 1; i < dataPoints; i++){
-        insertTreeX(t1, &point[i]);
-    }
-    //printf("Symmetric Traversal on T1 sorted on X value:\n");
-    symmetric(t1);
-    pre(t1,point);
+    t2 = treeInit(makePoint(DBL_MAX,DBL_MAX,DBL_MAX));
     for(int i = 1; i < dataPoints; i++)
-        insertTreeY(t2,&point[i]);
-    //printf("\nPostorder Traversal on T2 sorted on the Y value:\n");
-    post(t2);
+        insertTreeX(t1, &point[i]);
+    symmetric(t1);
+    pre(t1,t2);
+    post(t2->left);
     scanf("%d",&probe);
-    struct node *t3 = findClosest(t2,probe);
-    printf("(%d,%d,%d)\n",t3->x,t3->y,t3->z);
+    t3 = findClosest(t2,probe);
+    printf("(%d, %d, %d)\n",t3->x,t3->y,t3->z);
     return 0;
 }
