@@ -2,7 +2,7 @@
  * Date: Feb. 11, 2020
  * Course: CS 315, Dr. Finkel
  * Programming Assignment 2: Trees
- * 129 source lines of code: 16 lines in main, 113 lines of funtion code
+ * 130 source lines of code: 16 lines in main, 114 lines of funtion code
  */
 
 #include <stdio.h>
