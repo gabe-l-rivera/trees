@@ -2,12 +2,12 @@
  * Date: Feb. 11, 2020
  * Course: CS 315, Dr. Finkel
  * Programming Assignment 2: Trees
- * 130 source lines of code: 16 lines in main, 114 lines of funtion code
+ * 129 source lines of code: 16 lines in main, 113 lines of funtion code
  */
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <float.h>
+#include <limits.h>
 
 struct node{
     int x,y,z;
@@ -28,9 +28,9 @@ struct dataPoint* makePoint(int x, int y, int z){
 
 void fillPoint(struct dataPoint *point, int numberOfPoints){
     for(int i = numberOfPoints-1; i >= 0; i--){
-        scanf("%d", &point->z);
-        scanf("%d", &point->y);
         scanf("%d", &point->x);
+        scanf("%d", &point->y);
+        scanf("%d", &point->z);
         point+=1;
     }
 } //function used to fill data points from user input (works for randGen.pl and std input)
@@ -61,7 +61,7 @@ void insertTreeX(struct node *tree, struct dataPoint *point){
     }else{
         parent->right = newNode;
     }
-    
+
 } //fucntion used to insert nodes into a tree, sorted on the x value, ties go left. this function was derived from Dr.Finkels "in class" notes
 
 void insertTreeY(struct node *tree, struct dataPoint *point){
@@ -122,20 +122,25 @@ struct node *helper(struct node *tree, int target, struct node *closest){
 } //helper fucntion to assist finding the closest Y value with respect to the "probe"
 
 struct node *findClosest(struct node *tree, int target){
-    struct node *closest = makeNodePackage(makePoint(DBL_MAX,DBL_MAX,DBL_MAX));
+    struct node *closest = makeNodePackage(makePoint(INT_MAX,INT_MAX,INT_MAX));
     return helper(tree,target,closest);
 } //fucntion to find closest probe value
 
 int main(int argc, char *argv[]){
     int dataPoints = atoi(argv[1]);
+    if (dataPoints == 0){
+        printf("No data points given. Reenter data points.\n");
+        exit(0);
+    }
     int probe;
     struct dataPoint point[dataPoints]; // creates dataPoints number of point structures
     fillPoint(point, dataPoints);
     struct node *t1 = NULL, *t2 = NULL, *t3 = NULL;
     t1 = treeInit(point);
-    t2 = treeInit(makePoint(DBL_MAX,DBL_MAX,DBL_MAX));
-    for(int i = 1; i < dataPoints; i++)
+    t2 = treeInit(makePoint(INT_MAX,INT_MAX,INT_MAX));
+    for(int i = 1; i < dataPoints; i++){
         insertTreeX(t1, &point[i]);
+    }
     symmetric(t1);
     pre(t1,t2);
     post(t2->left);
